@@ -24,8 +24,10 @@ public class UserDaoTest {
         // 자바 5부터 제네릭 메서드 방식을 사용해
         // 두번째 매개변수로 반환타입을 지정할 수 있다
         UserDao userDao = context.getBean("userDao", UserDao.class);
+        UserDao userDao2 = context.getBean("userDao", UserDao.class);
 
         User user = userDao.get("abc123");
         System.out.println(user.getName());
+        System.out.println(userDao == userDao2);
     }
 }
