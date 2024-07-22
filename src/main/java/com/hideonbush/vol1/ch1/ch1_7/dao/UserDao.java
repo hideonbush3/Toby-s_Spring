@@ -1,11 +1,11 @@
-package com.hideonbush.vol1.ch1.dao;
+package com.hideonbush.vol1.ch1.ch1_7.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.hideonbush.vol1.ch1.domain.User;
+import com.hideonbush.vol1.ch1.ch1_7.domain.User;
 
 // 프로그래밍의 기초 개념중에 '관심사의 분리' 라는 것이 있다
 

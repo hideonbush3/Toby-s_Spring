@@ -1,4 +1,4 @@
-package com.hideonbush.vol1.ch1.dao;
+package com.hideonbush.vol1.ch1.ch1_7.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;

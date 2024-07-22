@@ -1,4 +1,4 @@
-package com.hideonbush.vol1.ch1.domain;
+package com.hideonbush.vol1.ch1.ch1_7.domain;
 
 public class User {
     String id;
