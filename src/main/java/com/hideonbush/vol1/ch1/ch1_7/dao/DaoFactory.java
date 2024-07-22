@@ -16,6 +16,14 @@ public class DaoFactory {
         return new UserDao(connectionMaker());
     }
 
+    // setter를 이용한 DI
+    // @Bean
+    // public UserDao userDao() {
+    // UserDao userDao = new UserDao();
+    // userDao.setConnectionMaker(connectionMaker());
+    // return userDao;
+    // }
+
     @Bean
     public ConnectionMaker connectionMaker() {
         return new DConnectionMaker();

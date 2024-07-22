@@ -15,6 +15,14 @@ import com.hideonbush.vol1.ch1.ch1_7.domain.User;
 public class UserDao {
     private ConnectionMaker connectionMaker;
 
+    // setter를 이용한 DI
+    // public void setConnectionMaker(ConnectionMaker c) {
+    // this.connectionMaker = c;
+    // }
+
+    // public UserDao() {
+    // }
+
     public UserDao(ConnectionMaker c) {
         this.connectionMaker = c;
     }
