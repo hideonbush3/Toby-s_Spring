@@ -25,15 +25,19 @@ public class UserDaoTest {
         assertThat(userDao.getCount(), is(0));
 
         User user1 = new User("abc123", "오스틴", "austin123");
+        User user2 = new User("hello123", "김인사", "goobbye");
 
         userDao.add(user1);
-        // 추가 이후 레코드의 개수가 1이 됐는지 확인한다
-        assertThat(userDao.getCount(), is(1));
+        userDao.add(user2);
+        assertThat(userDao.getCount(), is(2));
 
-        User user2 = userDao.get("abc123");
+        User savedUser1 = userDao.get("abc123");
+        assertThat(savedUser1.getName(), is(user1.getName()));
+        assertThat(savedUser1.getPassword(), is(user1.getPassword()));
 
-        assertThat(user2.getName(), is(user1.getName()));
-        assertThat(user2.getPassword(), is(user1.getPassword()));
+        User savedUser2 = userDao.get("hello123");
+        assertThat(savedUser2.getName(), is(user2.getName()));
+        assertThat(savedUser2.getPassword(), is(user2.getPassword()));
     }
 
     @Test
