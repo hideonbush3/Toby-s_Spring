@@ -1,14 +1,20 @@
 package com.hideonbush.vol1.ch2.ch2_2.dao;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.sql.SQLException;
 
+import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 
 import com.hideonbush.vol1.ch1.ch1_8.domain.User;
 
 public class UserDaoTest {
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+
+    @Test
+    public void addAndGet() throws SQLException {
         ApplicationContext context = new GenericXmlApplicationContext(
                 "com/hideonbush/vol1/ch2/ch2_2/applicationContext.xml");
         UserDao userDao = context.getBean("userDao", UserDao.class);
@@ -22,12 +28,7 @@ public class UserDaoTest {
 
         User user2 = userDao.get("abc123");
 
-        if (!user1.getName().equals(user2.getName())) {
-            System.out.println("테스트 실패 - name");
-        } else if (!user1.getPassword().equals(user2.getPassword())) {
-            System.out.println("테스트 실패 - password");
-        } else {
-            System.out.println("조회 테스트 성공");
-        }
+        assertThat(user2.getName(), is(user1.getName()));
+        assertThat(user2.getPassword(), is(user1.getPassword()));
     }
 }
