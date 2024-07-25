@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.hideonbush.vol1.ch2.ch2_3.domain.User;
 
 public class UserDao {
@@ -38,16 +40,22 @@ public class UserDao {
         ps.setString(1, id);
 
         ResultSet rs = ps.executeQuery();
-        rs.next();
+        User user = null;
 
-        User user = new User();
-        user.setId(rs.getString("id"));
-        user.setName(rs.getString("name"));
-        user.setPassword(rs.getString("password"));
+        if (rs.next()) {
+            user = new User(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("password"));
+        }
 
         rs.close();
         ps.close();
         c.close();
+
+        // 아이디에 맞는 유저가 존재하지 않으면 EmptyResultDataAccessException 예외 발생
+        if (user == null)
+            throw new EmptyResultDataAccessException(1);
 
         return user;
     }
