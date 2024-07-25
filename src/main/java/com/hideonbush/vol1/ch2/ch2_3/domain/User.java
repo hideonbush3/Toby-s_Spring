@@ -5,6 +5,17 @@ public class User {
     String name;
     String password;
 
+    // 기본 생성자 없을때 기본 생성자가 호출되면
+    // 조상의 기본 생성자가 호출된다 - 주의
+    public User() {
+    }
+
+    public User(String id, String name, String password) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+    }
+
     public String getId() {
         return this.id;
     }

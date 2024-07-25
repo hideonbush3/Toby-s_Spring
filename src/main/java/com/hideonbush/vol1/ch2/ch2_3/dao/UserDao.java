@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-import com.hideonbush.vol1.ch1.ch1_8.domain.User;
+import com.hideonbush.vol1.ch2.ch2_3.domain.User;
 
 public class UserDao {
     private DataSource dataSource;
