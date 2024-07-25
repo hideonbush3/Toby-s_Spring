@@ -15,12 +15,19 @@ import com.hideonbush.vol1.ch2.ch2_4.domain.User;
 
 public class UserDaoTest {
     private UserDao userDao;
+    private User user1;
+    private User user2;
+    private User user3;
 
     @Before
     public void setup() {
         ApplicationContext context = new GenericXmlApplicationContext(
                 "com/hideonbush/vol1/ch2/ch2_4/applicationContext.xml");
         this.userDao = context.getBean("userDao", UserDao.class);
+
+        user1 = new User("jisung", "박지성", "jisungman");
+        user2 = new User("ddangchil", "김땡칠", "ddangchilman");
+        user3 = new User("victor", "빅터 차", "victorman");
     }
 
     @Test
@@ -28,18 +35,15 @@ public class UserDaoTest {
         userDao.deleteAll();
         assertThat(userDao.getCount(), is(0));
 
-        User user1 = new User("abc123", "오스틴", "austin123");
-        User user2 = new User("hello123", "김인사", "goobbye");
-
         userDao.add(user1);
         userDao.add(user2);
         assertThat(userDao.getCount(), is(2));
 
-        User savedUser1 = userDao.get("abc123");
+        User savedUser1 = userDao.get(user1.getId());
         assertThat(savedUser1.getName(), is(user1.getName()));
         assertThat(savedUser1.getPassword(), is(user1.getPassword()));
 
-        User savedUser2 = userDao.get("hello123");
+        User savedUser2 = userDao.get(user2.getId());
         assertThat(savedUser2.getName(), is(user2.getName()));
         assertThat(savedUser2.getPassword(), is(user2.getPassword()));
     }
@@ -48,10 +52,6 @@ public class UserDaoTest {
     public void count() throws SQLException {
         userDao.deleteAll();
         assertThat(userDao.getCount(), is(0));
-
-        User user1 = new User("jisung", "박지성", "jisungman");
-        User user2 = new User("ddangchil", "김땡칠", "ddangchilman");
-        User user3 = new User("victor", "빅터 차", "victorman");
 
         userDao.add(user1);
         assertThat(userDao.getCount(), is(1));
