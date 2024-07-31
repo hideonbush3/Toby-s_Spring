@@ -5,15 +5,11 @@ import static org.junit.Assert.assertThat;
 
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,8 +22,7 @@ import com.hideonbush.vol1.ch2.ch2_4.domain.User;
 
 // @ContextConfiguration - 만들 애플리케이션 컨텍스트의 설정파일 경로
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/com/hideonbush/vol1/ch2/ch2_4/applicationContext.xml")
-@DirtiesContext
+@ContextConfiguration(locations = "/com/hideonbush/vol1/ch2/ch2_4/test-applicationContext.xml")
 public class UserDaoTest {
     // @Autowired
     // 클래스를 인스턴스 변수로 두고 Autowired 어노테이션을 설정하면
@@ -59,10 +54,6 @@ public class UserDaoTest {
         user1 = new User("jisung", "박지성", "jisungman");
         user2 = new User("ddangchil", "김땡칠", "ddangchilman");
         user3 = new User("victor", "빅터 차", "victorman");
-
-        DataSource dataSource = new SingleConnectionDataSource(
-                "jdbc:mysql://localhost/testdb", "root", "root", true);
-        userDao.setDataSource(dataSource);
     }
 
     @Test
