@@ -15,7 +15,7 @@
     </bean>
     <bean
         id="userDao"
-        class="com.hideonbush.vol1.ch3.ch3_1.dao.UserDao">
+        class="com.hideonbush.vol1.ch3.ch3_2.dao.UserDao">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
