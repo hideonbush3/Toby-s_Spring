@@ -100,7 +100,10 @@ public class UserDao {
         PreparedStatement ps = null;
         try {
             c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users");
+
+            // 자주 바뀌는 부분을 메서드로 추출
+            ps = makeStatement(c);
+
             ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
@@ -118,7 +121,12 @@ public class UserDao {
                 }
             }
         }
+    }
 
+    private PreparedStatement makeStatement(Connection c) throws SQLException {
+        PreparedStatement ps;
+        ps = c.prepareStatement("delete from users");
+        return ps;
     }
 
     public int getCount() throws SQLException {
