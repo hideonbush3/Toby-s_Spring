@@ -95,14 +95,26 @@ public abstract class UserDao {
 
     }
 
+    // 변한다, 변하지 않는다?
+    // 매 메서드마다 중복된다 -> 변하지 않는다
+    // 매 메서드마다 내용이 달라진다 -> 변한다
+
+    // 전략패턴
+    // Context의 contextMethod()에서 일정한 구조(변하지 않는 부분 즉, 여기선 try/catch/finally)를
+    // 갖고 동작하다가 특정 확장기능은 Strategy 인터페이스를 통해 외부의 독립된 클래스에 위임하는 패턴구조
+
+    // Context에 해당하는것 -> UserDao
+    // 특정 확장기능(변하는 부분) -> PreparedStatement를 만드는 부분
+    // Strategy에 해당하는것 -> StatementStrategy 인터페이스
+    // 외부의 독립된 클래스에 해당하는것 -> DeleteAllStatement
     public void deleteAll() throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
         try {
             c = dataSource.getConnection();
 
-            // 자주 바뀌는 부분을 메서드로 추출
-            ps = makeStatement(c);
+            StatementStrategy strategy = new DeleteAllStatement();
+            ps = strategy.makePreparedStatement(c);
 
             ps.executeUpdate();
         } catch (SQLException e) {
