@@ -19,7 +19,7 @@ public class UserDao {
 
     public void add(User user) throws SQLException {
         StatementStrategy st = new AddStatement(user);
-        jdbcWithStatementStrategy(st);
+        jdbcContextWithStatementStrategy(st);
     }
 
     public User get(String id) throws SQLException {
@@ -72,7 +72,7 @@ public class UserDao {
 
     public void deleteAll() throws SQLException {
         StatementStrategy st = new DeleteAllStatement();
-        jdbcWithStatementStrategy(st);
+        jdbcContextWithStatementStrategy(st);
     }
 
     public int getCount() throws SQLException {
@@ -109,7 +109,7 @@ public class UserDao {
         }
     }
 
-    public void jdbcWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
         try {
