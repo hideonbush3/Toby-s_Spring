@@ -14,9 +14,15 @@
         <property name="password" value="root" />
     </bean>
     <bean
+        id="jdbcContext"
+        class="com.hideonbush.vol1.ch3.ch3_4.dao.JdbcContext">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean
         id="userDao"
         class="com.hideonbush.vol1.ch3.ch3_4.dao.UserDao">
-        <property name="dataSource" ref="dataSource"/>
+        <property name="dataSource" ref="dataSource" />
+        <property name="jdbcContext" ref="jdbcContext"/>
     </bean>
 
 </beans>
