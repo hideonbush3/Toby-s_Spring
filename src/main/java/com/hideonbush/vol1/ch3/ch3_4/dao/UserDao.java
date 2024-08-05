@@ -12,15 +12,14 @@ import com.hideonbush.vol1.ch3.ch3_4.domain.User;
 
 public class UserDao {
     private DataSource dataSource;
-
-    public void setDataSource(DataSource d) {
-        this.dataSource = d;
-    }
-
     private JdbcContext jdbcContext;
 
-    public void setJdbcContext(JdbcContext jdbcContext) {
-        this.jdbcContext = jdbcContext;
+    public void setDataSource(DataSource d) {
+        this.jdbcContext = new JdbcContext(); // UserDao가 IoC 컨테이너 역할을 한다
+        this.jdbcContext.setDataSource(d); // DI 주입
+
+        // 아직 JdbcContext를 적용하지 않은 메서드들을 위해 남겨뒀을뿐 사실상 필요없다
+        this.dataSource = d;
     }
 
     public void add(final User user) throws SQLException {
