@@ -17,9 +17,11 @@ public class UserDao {
         this.dataSource = d;
     }
 
+    // 익명 내부 클래스
+    // 딱 한번만 사용할 것이니 굳이 StatementStrategy타입 변수에 담지말고
+    // jdbcContextWithStatementStrategy() 메서드의 파라미터에서 바로 생성
     public void add(final User user) throws SQLException {
-        class AddStatement implements StatementStrategy {
-            @Override
+        jdbcContextWithStatementStrategy(new StatementStrategy() {
             public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
                 PreparedStatement ps = c.prepareStatement(
                         "insert into users(id, name, password) values(?,?,?)");
@@ -29,10 +31,7 @@ public class UserDao {
 
                 return ps;
             }
-        }
-
-        StatementStrategy st = new AddStatement();
-        jdbcContextWithStatementStrategy(st);
+        });
     }
 
     public User get(String id) throws SQLException {
@@ -84,8 +83,12 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        StatementStrategy st = new DeleteAllStatement();
-        jdbcContextWithStatementStrategy(st);
+        jdbcContextWithStatementStrategy(new StatementStrategy() {
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("delete from users");
+                return ps;
+            }
+        });
     }
 
     public int getCount() throws SQLException {
