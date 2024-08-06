@@ -85,12 +85,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("delete from users");
-                return ps;
-            }
-        });
+        executeQuery("delete from users");
     }
 
     public int getCount() throws SQLException {
@@ -125,6 +120,21 @@ public class UserDao {
                 }
             }
         }
+    }
+
+    // 자바 8 이전에는 익명 내부 클래스는 외부 클래스의 변수를 참조할 때,
+    // 해당 변수는 final로 선언돼야 했었다
+    // 자바 8 이후로는 final을 생략 가능하다
+    // 하지만 해당 변수가 변경되지 않는다는 의도를 명확히 하기 위해
+    // 명시적으로 final로 선언하는게 좋은 습관
+    void executeQuery(final String query) throws SQLException {
+        this.jdbcContext.workWithStatementStrategy(
+                new StatementStrategy() {
+                    public PreparedStatement makePreparedStatement(Connection c)
+                            throws SQLException {
+                        return c.prepareStatement(query);
+                    }
+                });
     }
 
 }
