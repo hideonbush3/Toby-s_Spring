@@ -15,7 +15,9 @@ public class CalcSumTest {
     @Before
     public void setup() {
         this.calculator = new Calculator();
-        // getResource(현재패키지 기준 참조파일 위치)
+        // getResource(String name)
+        // 그냥 파일명 전달시 현재 클래스의 패키지 기준으로 찾는다(상대 경로)
+        // '/'를 넣을시 클래스패스의 루트 디렉토리를 기준으로 찾는다(절대 경로)
         this.numFilepath = getClass().getResource("numbers.txt").getPath();
     }
 
