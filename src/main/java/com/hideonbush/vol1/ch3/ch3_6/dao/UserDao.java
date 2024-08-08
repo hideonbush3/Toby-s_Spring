@@ -22,18 +22,14 @@ public class UserDao {
         this.dataSource = d;
     }
 
+    // 치환자를 가진 SQL로 PreparedStatement를 만들고
+    // 함께 제공하는 파라미터를 순서대로 바운딩해준다
     public void add(final User user) throws SQLException {
-        this.jdbcContext.workWithStatementStrategy(new StatementStrategy() {
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement(
-                        "insert into users(id, name, password) values(?,?,?)");
-                ps.setString(1, user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
-
-                return ps;
-            }
-        });
+        this.jdbcTemplate.update(
+                "insert into users(id, name, password) values(?, ?, ?)",
+                user.getId(),
+                user.getName(),
+                user.getPassword());
     }
 
     public User get(String id) throws SQLException {
@@ -84,8 +80,20 @@ public class UserDao {
 
     }
 
+    // 콜백을 직접 만들어서 템플릿 메서드로 전달
+    // public void deleteAll() throws SQLException {
+    // this.jdbcTemplate.update(
+    // new PreparedStatementCreator() {
+    // public PreparedStatement createPreparedStatement(Connection c)
+    // throws SQLException {
+    // return c.prepareStatement("delete from users");
+    // };
+    // });
+    // }
+
+    // 내장 콜백을 사용한다
     public void deleteAll() throws SQLException {
-        this.jdbcContext.executeQuery("delete from users");
+        this.jdbcTemplate.update("delete from users");
     }
 
     public int getCount() throws SQLException {
