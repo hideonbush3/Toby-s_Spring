@@ -6,8 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.hideonbush.vol1.ch3.ch3_6.domain.User;
 
@@ -97,37 +100,19 @@ public class UserDao {
     }
 
     public int getCount() throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement("select count(*) from users");
-            rs = ps.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (ps != null) {
-                try {
-                    ps.clearParameters();
-                } catch (SQLException e) {
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
+        return this.jdbcTemplate.query(
+                new PreparedStatementCreator() {
+                    public PreparedStatement createPreparedStatement(Connection con)
+                            throws SQLException {
+                        return con.prepareStatement("select count(*) from users");
+                    }
+                },
+                new ResultSetExtractor<Integer>() {
+                    public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        rs.next();
+                        return rs.getInt(1);
+                    }
+                });
     }
 
 }
