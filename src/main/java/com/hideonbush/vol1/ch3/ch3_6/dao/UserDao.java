@@ -2,6 +2,8 @@ package com.hideonbush.vol1.ch3.ch3_6.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +34,20 @@ public class UserDao {
                 new Object[] { id }, // 쿼리에 바운딩할 파라미터, 가변인자가 아닌 Object 배열로 생성
                 new RowMapper<User>() {
                     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        return new User(
+                                rs.getString("id"),
+                                rs.getString("name"),
+                                rs.getString("password"));
+                    }
+                });
+    }
+
+    public List<User> getAll() throws SQLException {
+        return this.jdbcTemplate.query(
+                "select * from users order by id",
+                new RowMapper<User>() {
+                    public User mapRow(ResultSet rs, int rowNum)
+                            throws SQLException {
                         return new User(
                                 rs.getString("id"),
                                 rs.getString("name"),
