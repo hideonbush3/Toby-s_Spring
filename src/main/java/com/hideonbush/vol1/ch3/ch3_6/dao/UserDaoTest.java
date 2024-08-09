@@ -76,6 +76,13 @@ public class UserDaoTest {
     public void getAll() throws SQLException {
         userDao.deleteAll();
 
+        // userDao.getAll()에 대한 테스트 코드인 동시에
+        // 기능을 설명해주는 코드
+        // 여기서 기능이란, 아무런 데이터가 없을때 userDao.getAll()를
+        // 호출하면 크기가 0인 List<T>를 반환한다는 것을 뜻한다
+        List<User> users0 = userDao.getAll();
+        assertThat(users0.size(), is(0));
+
         userDao.add(user1);
         List<User> users1 = userDao.getAll();
         assertThat(users1.size(), is(1));
