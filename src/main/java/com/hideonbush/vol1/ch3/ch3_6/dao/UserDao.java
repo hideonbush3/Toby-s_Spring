@@ -13,6 +13,16 @@ import com.hideonbush.vol1.ch3.ch3_6.domain.User;
 
 public class UserDao {
     private JdbcTemplate jdbcTemplate;
+    private RowMapper<User> userMapper = new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new User(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("password"));
+        }
+
+    };
 
     public void setDataSource(DataSource d) {
         this.jdbcTemplate = new JdbcTemplate(d);
@@ -32,28 +42,13 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(
                 "select * from users where id = ?",
                 new Object[] { id }, // 쿼리에 바운딩할 파라미터, 가변인자가 아닌 Object 배열로 생성
-                new RowMapper<User>() {
-                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        return new User(
-                                rs.getString("id"),
-                                rs.getString("name"),
-                                rs.getString("password"));
-                    }
-                });
+                this.userMapper);
     }
 
     public List<User> getAll() throws SQLException {
         return this.jdbcTemplate.query(
                 "select * from users order by id",
-                new RowMapper<User>() {
-                    public User mapRow(ResultSet rs, int rowNum)
-                            throws SQLException {
-                        return new User(
-                                rs.getString("id"),
-                                rs.getString("name"),
-                                rs.getString("password"));
-                    }
-                });
+                this.userMapper);
     }
 
     // 내장 콜백을 사용한다
