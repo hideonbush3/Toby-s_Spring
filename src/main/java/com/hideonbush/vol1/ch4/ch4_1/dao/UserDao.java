@@ -30,7 +30,7 @@ public class UserDao {
 
     // 치환자를 가진 SQL로 PreparedStatement를 만들고
     // 함께 제공하는 파라미터를 순서대로 바운딩해준다
-    public void add(final User user) throws SQLException {
+    public void add(final User user) {
         this.jdbcTemplate.update(
                 "insert into users(id, name, password) values(?, ?, ?)",
                 user.getId(),
@@ -38,25 +38,25 @@ public class UserDao {
                 user.getPassword());
     }
 
-    public User get(String id) throws SQLException {
+    public User get(String id) {
         return this.jdbcTemplate.queryForObject(
                 "select * from users where id = ?",
                 new Object[] { id }, // 쿼리에 바운딩할 파라미터, 가변인자가 아닌 Object 배열로 생성
                 this.userMapper);
     }
 
-    public List<User> getAll() throws SQLException {
+    public List<User> getAll() {
         return this.jdbcTemplate.query(
                 "select * from users order by id",
                 this.userMapper);
     }
 
     // 내장 콜백을 사용한다
-    public void deleteAll() throws SQLException {
+    public void deleteAll() {
         this.jdbcTemplate.update("delete from users");
     }
 
-    public int getCount() throws SQLException {
+    public int getCount() {
         return this.jdbcTemplate.queryForObject(
                 "select count(*) from users", Integer.class);
     }

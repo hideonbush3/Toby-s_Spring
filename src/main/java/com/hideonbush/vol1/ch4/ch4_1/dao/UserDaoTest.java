@@ -34,7 +34,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void addAndGet() throws SQLException {
+    public void addAndGet() {
         userDao.deleteAll();
         assertThat(userDao.getCount(), is(0));
 
@@ -52,7 +52,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void count() throws SQLException {
+    public void count() {
         userDao.deleteAll();
         assertThat(userDao.getCount(), is(0));
 
@@ -65,7 +65,7 @@ public class UserDaoTest {
     }
 
     @Test(expected = EmptyResultDataAccessException.class)
-    public void getUserFailure() throws SQLException {
+    public void getUserFailure() {
         userDao.deleteAll();
         assertThat(userDao.getCount(), is(0));
 
@@ -73,7 +73,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void getAll() throws SQLException {
+    public void getAll() {
         userDao.deleteAll();
 
         // userDao.getAll()에 대한 테스트 코드인 동시에
