@@ -85,3 +85,78 @@ JdbcTemplate를 사용하는 콜백 오브젝트는 SQLException을 템플릿으
 
 이렇게 런타임 예외로 만들어서 전달하면 EJB는 이를 시스템 익셉션으로 인식하고 트랜잭션을 자동으로 롤백해준다.
 
+## 예외처리 전략
+### 런타임 예외의 보편화
+체크 예외는 복구할 가능성이 조금이라도 있는 상황에 발생하기 때문에 자바는 이를 처리하는 catch 블록이나 throws 선언을 강제한다.
+
+자바 엔터프라이즈 서버환경에선 독립형 애플리케이션과 달리 예외 발생시 작업을 중지하고 사용자와 바로 소통하면서 작업을 복구할 방법이 없다.
+
+자바의 환경이 서버로 이동하면서 체크 예외의 활용도는 점점 떨어지고 있다. 대응 불가능한 체크 예외라면 빨리 런타임 예외로 전환해서 던지는것이 낫다.
+
+언체크 예외라도 catch 블록으로 잡아서 복구하거나 처리할 수 있다. 하지만, 대개는 복구 불가능한 상황이고 보나마나 RuntimeException으로 포장해서 던져야 할테니 최근에 등장한 표준스펙이나 오픈소스 프레임워크에서는 API가 던지는 예외를 언체크 예외로 정의하는것이
+ 보편화되고 있다.
+
+ ### 사용자 추가 메서드의 예외처리
+ 사용자를 추가하는 메서드인 add()에서는 JDBC 코드에서 SQLException이 발생할 수 있는데 그 원인이 아이디 중복인 경우 좀 더 의미있는 예외로 전환해서 던질 수 있을 것이다.
+
+
+ ```java
+ public class DuplicateUserIdException extends RuntimeException { public DuplicateUserIdException(Throwable cause) { super(cause);
+} }
+```
+
+```java
+public void add() throws DuplicateUserIdException { try {
+	 	 // JDBC를 이용해 user 정보를 DB에 추가하는 코드 또는 	 	 // 그런 기능이 있는 다른 SQLException을 던지는 메소드를 호출하는 코드
+} catch (SQLException e) { if (e.getErrorCode() = = MysqlErrorNumbers.ER_DUP_ENTRY)
+	 	 throw new DuplicateUserIdException(e); 	 // 예외 전환
+else
+	 	 throw new RuntimeException(e);	 	 // 예외 포장
+}
+}
+```
+발생한 SQLException의 원인이 아이디 중복일 경우 DuplicateUserIdException으로 전환해서 던지도록 했다.
+
+add()를 호출하는 쪽에서 받은 예외가 DuplicateUserIdException이면 적절한 처리를 할 수 있을 것이다.
+
+그리고 add()를 호출한 오브젝트보다 더 앞단의 오브젝트에서 예외처리를 할 수도 있도록 해주기 위해서 DuplicateUserIdException를 체크 예외가 아닌 런타임 예외로 만들었다.
+
+SQLException은 대부분 복구 불가능한 예외이기 때문에 잡아봤자 처리할 수도 없고 결국엔 throws를 타고 계속 앞으로 전달되다가 애플리케이션 바깥으로 던져질 것이다.
+
+그럴바에는 런타임 예외로 포장해서 add() 메서드를 사용하는 메서드들이 신경쓰지 않도록 해주는것이 낫다.
+
+### 애플리케이션 예외
+시스템 또는 외부의 예외상황이 원인이 아니라 애플리케이션 로직에 의해 의도적으로 발생시키고 반드시 catch 해서 무엇인가 조치를 취하도록 하는 예외
+
+예를 들어 사용자가 요청한 금액을 은행계좌에서 출금하는 기능을 가진 메서드가 있을때 이런 메서드의 설계 방법은 두가지가 있다.
+
+>첫번째, 정상적인 출금 처리를 했을때와 잔고부족일때 각각 다른 종류의 리턴값을 돌려준다
+
+예를 들어 정상적인 경우 요청금액을 리턴하고 잔고부족일 경우 특별한 값(0, -1, -999 등)을 리턴하도록 설계하는 것이다.
+
+그런데 리턴값으로 결과를 확인하고 예외상황을 체크하면 불편한 점이 있다.
+
+비정상처리일 경우에 전달하는 값의 표준이란게 없어서 개발자간에 혼란이 생길 수 있다.
+
+그리고 해당 메서드를 호출하는 쪽에서 리턴값을 체크하는 조건문이 자주 등장해서 코드가 지저분해지고 흐름을 파악하기 힘들다.
+
+>두번째, 잔고부족같은 예외 상황에서는 비지니스적인 의미를 담은 예외를 던지도록 만든다
+
+
+이때 발생하는 예외는 의도적으로 체크 예외로 만든다.
+그래서 개발자로 하여금 잔고부족 같은 자주 발생할 수 있는 예외 상황에 대한 처리를 강제하도록 만드는것이 좋다.
+
+아래는 잔고부족을 애플리케이션 예외로 만들어 처리하도록 하는 코드다.
+```java
+try { BigDecimal balance = account.withdraw(amount);
+...
+	 // 정상적인 처리 결과를 출력하도록 진행
+} catch(InsufficientBalanceException e) {	 // 체크 예외 	 // InsufficientBalanceException에 담긴 인출 가능한 잔고금액 정보를 가져옴
+BigDecimal availFunds = e.getAvailFunds();
+...
+	 // 잔고 부족 안내 메시지를 준비하고 이를 출력하도록 진행
+}
+```
+
+
+
