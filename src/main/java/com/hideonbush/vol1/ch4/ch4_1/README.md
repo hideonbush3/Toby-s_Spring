@@ -158,5 +158,26 @@ BigDecimal availFunds = e.getAvailFunds();
 }
 ```
 
+## SQLException은 어떻게 됐나?
+99%의 SQLException은 코드 레벨에서 복구할 수 있는 방법이 없다.
 
+SQLException이 발생하는 상황의 예시는 다음과 같다
+- SQL 문법위반
+- 제약조건 위반
+- DB 서버 다운
+- 네트워크 불안정
+- DB 커넥션 풀이 꽉차서 DB 커넥션 로드 불가능
 
+시스템의 예외라면 관리자에게 빨리 알리는 것 외엔 방법이 없다.
+
+마찬가지로 애플리케이션 코드의 버그나 미처 다루지 않은 범위를 벗어난 값 때문에 발생하는 예외도 복구할 방법이 없다.
+
+따라서 예외처리 전략을 적용해 반복적이고 무의미한 throws 선언을 더이상 방치하지 말고 가능한 빨리 런타임 예외로 전환해줘야 한다.
+
+스프링의 JdbcTemplate는 이런 예외처리 전략을 따르고 있다.
+
+JdbcTemplate의 템플릿과 콜백에서 발생하는 모든 SQLException을 런타임 예외인 DataAccessException으로 포장해서 던진다.
+
+따라서 JdbcTemplate을 사용하는 메서드에선 꼭 필요할때만 DataAccessException 예외를 잡아서 처리하고 그 외엔 무시해도 된다.
+
+스프링의 API 메서드에 정의돼있는 대부분의 예외도 모두 런타임 예외이다.
