@@ -28,3 +28,13 @@
 - 템플릿/콜백 패턴
 - 제네릭스
 - JdbcTemplate
+
+4장 keyword
+- 체크 예외
+- 언체크 예외/런타임 예외
+- 예외 전환
+- SQLException
+- DataAccessException
+- JDBC, JDO, JPA
+- 데이터 액세스 기술에 독립적인 DAO
+- SQLExceptionTranslator
