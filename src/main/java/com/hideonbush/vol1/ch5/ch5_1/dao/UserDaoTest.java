@@ -20,6 +20,7 @@ import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.hideonbush.vol1.ch5.ch5_1.domain.Level;
 import com.hideonbush.vol1.ch5.ch5_1.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -36,9 +37,9 @@ public class UserDaoTest {
 
     @Before
     public void setup() {
-        user1 = new User("jisung", "박지성", "jisungman");
-        user2 = new User("ddangchil", "김땡칠", "ddangchilman");
-        user3 = new User("victor", "빅터 차", "victorman");
+        user1 = new User("jisung", "박지성", "jisungman", Level.BASIC, 1, 0);
+        user2 = new User("ddangchil", "김땡칠", "ddangchilman", Level.SILVER, 55, 10);
+        user3 = new User("victor", "빅터 차", "victorman", Level.GOLD, 100, 40);
     }
 
     @Test
