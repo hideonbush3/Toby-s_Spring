@@ -52,12 +52,10 @@ public class UserDaoTest {
         assertThat(dao.getCount(), is(2));
 
         User savedUser1 = dao.get(user1.getId());
-        assertThat(savedUser1.getName(), is(user1.getName()));
-        assertThat(savedUser1.getPassword(), is(user1.getPassword()));
+        checkSameUser(savedUser1, user1);
 
         User savedUser2 = dao.get(user2.getId());
-        assertThat(savedUser2.getName(), is(user2.getName()));
-        assertThat(savedUser2.getPassword(), is(user2.getPassword()));
+        checkSameUser(savedUser2, user2);
     }
 
     @Test
