@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.hideonbush.vol1.ch5.ch5_1.domain.Level;
 import com.hideonbush.vol1.ch5.ch5_1.domain.User;
 
 public class UserDaoJdbc implements UserDao {
@@ -19,7 +20,10 @@ public class UserDaoJdbc implements UserDao {
             return new User(
                     rs.getString("id"),
                     rs.getString("name"),
-                    rs.getString("password"));
+                    rs.getString("password"),
+                    Level.valueOf(rs.getInt("level")),
+                    rs.getInt("login"),
+                    rs.getInt("recommend"));
         }
 
     };
