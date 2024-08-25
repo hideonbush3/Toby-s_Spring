@@ -34,10 +34,15 @@ public class UserDaoJdbc implements UserDao {
 
     public void add(final User user) {
         this.jdbcTemplate.update(
-                "insert into users(id, name, password) values(?, ?, ?)",
+                "insert into " +
+                        "users(id, name, password, level, login, recommend) " +
+                        "values(?, ?, ?, ?, ? ,?)",
                 user.getId(),
                 user.getName(),
-                user.getPassword());
+                user.getPassword(),
+                user.getLevel().intValue(),
+                user.getLogin(),
+                user.getRecommend());
     }
 
     public User get(String id) {
