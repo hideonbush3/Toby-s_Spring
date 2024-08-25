@@ -24,7 +24,7 @@ import com.hideonbush.vol1.ch5.ch5_1.domain.Level;
 import com.hideonbush.vol1.ch5.ch5_1.domain.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "/com/hideonbush/vol1/ch4/test-applicationContext.xml")
+@ContextConfiguration(locations = "/com/hideonbush/vol1/ch5/test-applicationContext.xml")
 public class UserDaoTest {
     @Autowired
     private UserDao dao;
