@@ -38,3 +38,8 @@
 - JDBC, JDO, JPA
 - 데이터 액세스 기술에 독립적인 DAO
 - SQLExceptionTranslator
+
+5장 keyword
+- 서비스 추상화
+- 트랜잭션
+- enum
