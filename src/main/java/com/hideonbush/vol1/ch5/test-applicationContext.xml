@@ -16,13 +16,13 @@
 
     <bean
         id="userDao"
-        class="com.hideonbush.vol1.ch5.ch5_3.dao.UserDaoJdbc">
+        class="com.hideonbush.vol1.ch5.ch5_4.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
     </bean>
 
     <bean
         id="userService"
-        class="com.hideonbush.vol1.ch5.ch5_3.service.UserService">
+        class="com.hideonbush.vol1.ch5.ch5_4.service.UserService">
         <property name="userDao" ref="userDao" />
     </bean>
 
