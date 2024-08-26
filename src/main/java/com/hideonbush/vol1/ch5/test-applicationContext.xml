@@ -16,7 +16,7 @@
 
     <bean
         id="userDao"
-        class="com.hideonbush.vol1.ch5.ch5_1.dao.UserDaoJdbc">
+        class="com.hideonbush.vol1.ch5.ch5_2.dao.UserDaoJdbc">
         <property name="dataSource" ref="dataSource" />
     </bean>
 
