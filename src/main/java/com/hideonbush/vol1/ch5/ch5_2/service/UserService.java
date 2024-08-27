@@ -16,6 +16,7 @@ public class UserService {
         this.userDao = userDao;
     }
 
+    // 트랜잭션이 적용되지 않은 메서드
     public void upgradeLevels() {
         List<User> users = userDao.getAll();
         for (User user : users) {
