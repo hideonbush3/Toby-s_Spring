@@ -5,6 +5,7 @@ import static com.hideonbush.vol1.ch5.ch5_2.service.UserService.MIN_RECOMMEND_FO
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -82,5 +83,42 @@ public class UserServiceTest {
 
         assertThat(userWithLevel.getLevel(), is(userWithLevelRead.getLevel()));
         assertThat(userWithoutLevelRead.getLevel(), is(Level.BASIC));
+    }
+
+    @Test
+    public void upgradeAllOrNothing() {
+        TestUserService testUserService = new TestUserService(users.get(3).getId());
+        testUserService.setUserDao(userDao);
+
+        userDao.deleteAll();
+
+        for (User user : users)
+            testUserService.add(user);
+
+        try {
+            testUserService.upgradeLevels();
+            fail("TestUserServiceException expected!");
+        } catch (TestUserServiceException e) {
+        }
+
+        checkLevelUpgraded(users.get(1), false);
+    }
+
+    static class TestUserService extends UserService {
+        private String id;
+
+        private TestUserService(String id) {
+            this.id = id;
+        }
+
+        @Override
+        protected void upgradeLevel(User user) {
+            if (user.getId().equals(this.id))
+                throw new TestUserServiceException();
+            super.upgradeLevel(user);
+        }
+    }
+
+    static class TestUserServiceException extends RuntimeException {
     }
 }
