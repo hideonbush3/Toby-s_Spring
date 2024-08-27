@@ -24,6 +24,7 @@
         id="userService"
         class="com.hideonbush.vol1.ch5.ch5_2.service.UserService">
         <property name="userDao" ref="userDao" />
+        <property name="dataSource" ref="dataSource" />
     </bean>
 
 </beans>
