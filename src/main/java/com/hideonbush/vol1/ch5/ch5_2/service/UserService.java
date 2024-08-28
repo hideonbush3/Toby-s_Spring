@@ -1,12 +1,13 @@
 package com.hideonbush.vol1.ch5.ch5_2.service;
 
-import java.sql.Connection;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.hideonbush.vol1.ch5.ch5_2.dao.UserDao;
 import com.hideonbush.vol1.ch5.ch5_2.domain.Level;
@@ -27,23 +28,28 @@ public class UserService {
         this.dataSource = dataSource;
     }
 
-    // 트랜잭션 동기화가 돼있는 상태에서 JdbcTemplate을 사용하면
-    // JdbcTemplate은 동기화 돼있는 DB 커넥션을 사용한다
-    // 결국 DAO를 통해 진행되는 모든 데이터 액세스 작업은
-    // upgradeLevels() 메서드에서 만든 똑같은 Connection을 사용한다
+    // 스프링의 트랜잭션 추상화 기술은 앞서 적용해봤던 트랜잭션 동기화를 사용한다
+    // PlatformTransactionManager로 시작한 트랜잭션은 트랜잭션 동기화 저장소에 저장된다
+    // PlatformTransactionManager를 구현한 DataSourceTransactionManager는
+    // JdbcTemplate에서 사용될 수 있는 방식으로 트랜잭션을 관리해준다
+    // 따라서 PlatformTransactionManager를 통해 시작한 트랜잭션은
+    // UserDao의 JdbcTemplate 안에서 사용된다
     public void upgradeLevels() throws Exception {
-        // 스프링이 제공하는 동기화 관리 클래스
-        // 트랜잭션 동기화 작업 초기화 요청
-        TransactionSynchronizationManager.initSynchronization();
+        // 스프링이 제공하는 트랜잭션 경계설정을 위한 추상 인터페이스 PlatformTransactionManager
+        // JDBC의 로컬 트랜잭션을 사용한다면 PlatformTransactionManager을 구현한
+        // DataSourceTransactionManager를 사용한다
+        // 생성자의 파라미터로 사용할 DB의 DataSource를 전달한다
+        PlatformTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
 
-        // 스프링이 제공하는 유틸 클래스 DataSourceUtils
-        // DataSource에서 커넥션을 가져오지 않고 DataSourceUtils에서 가져온다
-        // DataSourceUtils에서 커넥션을 가져오면 해당 커넥션을
-        // 트랜잭션 동기화에 사용하도록 저장소에 자동으로 바인딩 해준다
-        Connection c = DataSourceUtils.getConnection(dataSource);
-
-        // 트랜잭션 시작
-        c.setAutoCommit(false);
+        // JDBC를 이용하는 경우엔 먼저 Connection을 생성하고 트랜잭션을 시작했었다
+        // PlatformTransactionManager에서는 트랜잭션을 가져오는 요청인
+        // getTransaction() 메서드를 호출하기만 하면 된다
+        // 필요에 따라서 트랜잭션 매니저가 DB 커넥션을 가져오는 작업도 같이 수행해주기 때문임
+        // DefaultTransactionDefinition 객체는 트랜잭션에 대한 속성을 담고있음
+        // 이렇게 시작된 트랜잭션은 TransactionStatus 타입의 변수에 저장된다
+        // TransactionStatus은 트랜잭션에 대한 조작(커밋, 롤백 등..)이 필요할때
+        // PlatformTransactionManager 메서드의 파라미터로 전달하면 된다
+        TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
             List<User> users = userDao.getAll();
             for (User user : users) {
@@ -51,19 +57,10 @@ public class UserService {
                     upgradeLevel(user);
                 }
             }
-
-            // 작업 정상종료시 트랜잭션 커밋
-            c.commit();
+            transactionManager.commit(status);
         } catch (Exception e) {
-            // 이상 발생시 원상복구
-            c.rollback();
+            transactionManager.rollback(status);
             throw e;
-        } finally {
-            DataSourceUtils.releaseConnection(c, dataSource); // DB 커넥션 닫기
-
-            // 동기화 작업 종료 및 정리
-            TransactionSynchronizationManager.unbindResource(dataSource);
-            TransactionSynchronizationManager.clearSynchronization();
         }
     }
 
