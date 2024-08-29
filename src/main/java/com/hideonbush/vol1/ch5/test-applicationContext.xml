@@ -24,7 +24,12 @@
         id="userService"
         class="com.hideonbush.vol1.ch5.ch5_2.service.UserService">
         <property name="userDao" ref="userDao" />
-        <property name="dataSource" ref="dataSource" />
+        <property name="transactionManager" ref="transactionManager" />
     </bean>
 
+    <bean
+        id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 </beans>
