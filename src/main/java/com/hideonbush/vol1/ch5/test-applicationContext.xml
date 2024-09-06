@@ -40,20 +40,5 @@
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
-    <bean
-        id="mailSender"
-        class="org.springframework.mail.javamail.JavaMailSenderImpl">
-        <property name="host" value="smtp.gmail.com" />
-        <property name="protocol" value="smtp" />
-        <property name="port" value="587" />
-        <property name="username" value="${email.address}" />
-        <property name="password" value="${email.password}" />
-        <property name="javaMailProperties">
-            <props>
-                <prop key="mail.smtp.auth">true</prop>
-                <prop key="mail.smtp.starttls.enable">true</prop>
-                <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
-            </props>
-        </property>
-    </bean>
+    <bean id="mailSender" class="com.hideonbush.vol1.ch5.ch5_4.service.DummyMailSender" />
 </beans>
