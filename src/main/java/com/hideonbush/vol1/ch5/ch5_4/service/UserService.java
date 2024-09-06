@@ -1,10 +1,9 @@
 package com.hideonbush.vol1.ch5.ch5_4.service;
 
 import java.util.List;
-import java.util.Properties;
 
+import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -16,6 +15,8 @@ import com.hideonbush.vol1.ch5.ch5_4.domain.User;
 public class UserService {
     UserDao userDao;
     private PlatformTransactionManager transactionManager;
+    private MailSender mailSender;
+    private String adminEmailAddress;
 
     public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
     public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -26,6 +27,14 @@ public class UserService {
 
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager;
+    }
+
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
+    }
+
+    public void setAdminEmailAddress(String adminEmailAddress) {
+        this.adminEmailAddress = adminEmailAddress;
     }
 
     // 스프링의 트랜잭션 추상화 기술은 앞서 적용해봤던 트랜잭션 동기화를 사용한다
@@ -83,25 +92,6 @@ public class UserService {
     }
 
     private void sendUpgradeEmail(User user) {
-        String smtpHost = "smtp.gmail.com";
-
-        Properties javaMailProperties = new Properties();
-        javaMailProperties.put("mail.smtp.auth", true);
-        javaMailProperties.put("mail.smtp.starttls.enable", true);
-        javaMailProperties.put("mail.smtp.ssl.protocols", "TLSv1.2");
-
-        String adminEmailAddress = "이메일";
-        String adminEmailPassword = "비밀번호";
-
-        // MailSender의 구현 클래스인 JavaMailSenderImpl
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(smtpHost);
-        mailSender.setJavaMailProperties(javaMailProperties);
-        mailSender.setProtocol("smtp");
-        mailSender.setPort(587);
-        mailSender.setUsername(adminEmailAddress);
-        mailSender.setPassword(adminEmailPassword);
-
         // 간단한 텍스트가 전부이므로 MailMessage를 구현한
         // SimpleMailMessage를 사용해 메시지 생성
         SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -110,6 +100,6 @@ public class UserService {
         mailMessage.setSubject("Upgrade 안내");
         mailMessage.setText("사용자님의 등급이 " + user.getLevel().name());
 
-        mailSender.send(mailMessage);
+        this.mailSender.send(mailMessage);
     }
 }
