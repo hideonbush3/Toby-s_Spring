@@ -37,17 +37,9 @@ public class UserService {
         this.adminEmailAddress = adminEmailAddress;
     }
 
-    // 스프링의 트랜잭션 추상화 기술은 앞서 적용해봤던 트랜잭션 동기화를 사용한다
+    // PlatformTransactionManager의 getTransaction() 메서드를 호출하면 트랜잭션이 시작된다
     // PlatformTransactionManager로 시작한 트랜잭션은 트랜잭션 동기화 저장소에 저장된다
     public void upgradeLevels() throws Exception {
-        // JDBC를 이용하는 경우엔 먼저 Connection을 생성하고 트랜잭션을 시작했었다
-        // PlatformTransactionManager에서는 트랜잭션을 가져오는 요청인
-        // getTransaction() 메서드를 호출하기만 하면 된다
-        // 필요에 따라서 트랜잭션 매니저가 DB 커넥션을 가져오는 작업도 같이 수행해주기 때문임
-        // DefaultTransactionDefinition 객체는 트랜잭션에 대한 속성을 담고있음
-        // 이렇게 시작된 트랜잭션은 TransactionStatus 타입의 변수에 저장된다
-        // TransactionStatus은 트랜잭션에 대한 조작(커밋, 롤백 등..)이 필요할때
-        // PlatformTransactionManager 메서드의 파라미터로 전달하면 된다
         TransactionStatus status = this.transactionManager.getTransaction(new DefaultTransactionDefinition());
         try {
             upgradeLevelsInternal();
