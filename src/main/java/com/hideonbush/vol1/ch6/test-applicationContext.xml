@@ -38,6 +38,8 @@
         <property name="userDao" ref="userDao" />
         <property name="mailSender" ref="mailSender" />
         <property name="adminEmailAddress" value="${email.address}" />
+    </bean>
+    
     <bean
         id="transactionManager"
         class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
