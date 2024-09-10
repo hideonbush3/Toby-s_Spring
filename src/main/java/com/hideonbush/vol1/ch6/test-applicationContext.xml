@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:config.properties" />
+    </bean>
+    
+    <bean
+        id="dataSource"
+        class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost/testdb" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <bean
+        id="userDao"
+        class="com.hideonbush.vol1.ch6.ch6_1.dao.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <bean
+        id="userService"
+        class="com.hideonbush.vol1.ch6.ch6_1.service.UserService">
+        <property name="userDao" ref="userDao" />
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="mailSender" ref="mailSender" />
+        <property name="adminEmailAddress" value="${email.address}" />
+    </bean>
+
+    <bean
+        id="transactionManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="mailSender" class="com.hideonbush.vol1.ch6.ch6_1.service.DummyMailSender" />
+</beans>
