@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.hideonbush.vol1.ch6.ch6_2.dao.MockUserDao;
 import com.hideonbush.vol1.ch6.ch6_2.dao.UserDao;
 import com.hideonbush.vol1.ch6.ch6_2.domain.Level;
 import com.hideonbush.vol1.ch6.ch6_2.domain.User;
@@ -61,28 +61,31 @@ public class UserServiceTest {
     }
 
     @Test
-    @DirtiesContext // 컨텍스트의 DI 설정을 변경하는 테스트라는 것을 알린다
     public void upgradeLevels() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
+        UserServiceImpl userServiceImpl = new UserServiceImpl();
+
+        MockUserDao mockUserDao = new MockUserDao(this.users);
+        userServiceImpl.setUserDao(mockUserDao);
 
         MockMailSender mockMailSender = new MockMailSender();
         userServiceImpl.setMailSender(mockMailSender);
 
-        userService.upgradeLevels();
+        userServiceImpl.upgradeLevels();
 
-        checkLevelUpgraded(users.get(0), false);
-        checkLevelUpgraded(users.get(1), true);
-        checkLevelUpgraded(users.get(2), false);
-        checkLevelUpgraded(users.get(3), true);
-        checkLevelUpgraded(users.get(4), false);
+        List<User> updated = mockUserDao.getUpdated();
+        assertThat(updated.size(), is(2));
+        CheckUserAndLevel(updated.get(0), "erwins", Level.SILVER);
+        CheckUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 
         List<String> request = mockMailSender.getRequests();
         assertThat(request.size(), is(2));
         assertThat(request.get(0), is(users.get(1).getEmail()));
         assertThat(request.get(1), is(users.get(3).getEmail()));
+    }
+
+    private void CheckUserAndLevel(User updated, String expectedId, Level expectedLevel) {
+        assertThat(updated.getId(), is(expectedId));
+        assertThat(updated.getLevel(), is(expectedLevel));
     }
 
     @Test
