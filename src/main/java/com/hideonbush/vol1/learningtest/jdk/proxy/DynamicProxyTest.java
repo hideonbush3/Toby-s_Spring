@@ -52,15 +52,20 @@ public class DynamicProxyTest {
     // 다이내믹 프록시가 타깃의 메서드를 호출할때 이를 가로챌 InvocationHandler
     // 타깃의 반환값을 대문자로 바꾸는 부가기능과 요청 위임 코드를 담고있다
     static class UppercaseHandler implements InvocationHandler {
-        Hello target;
+        Object target;
 
         private UppercaseHandler(Hello target) {
             this.target = target;
         }
 
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            String ret = (String) method.invoke(target, args);
-            return ret.toUpperCase();
+            Object ret = method.invoke(target, args);
+            // 타깃의 반환타입, 호출하는 메서드명이 특정할때만 부가기능을 제공하도록 제한할 수 있다
+            if (ret instanceof String && method.getName().startsWith("say")) {
+                return ((String) ret).toUpperCase();
+            } else {
+                return ret;
+            }
         }
     }
 
