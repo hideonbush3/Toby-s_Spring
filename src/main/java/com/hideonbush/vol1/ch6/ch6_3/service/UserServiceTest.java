@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,14 +114,21 @@ public class UserServiceTest {
         testUserService.setMailSender(mailSender);
         testUserService.setAdminEmailAddress(adminEmailAddress);
 
-        UserServiceTx txUserService = new UserServiceTx();
-        txUserService.setTransactionManager(transactionManager);
-        txUserService.setUserService(testUserService);
+        // 트랜잭션 핸들러가 필요한 정보와 오브젝트 DI
+        TransactionHandler txHandler = new TransactionHandler();
+        txHandler.setTarget(testUserService);
+        txHandler.setTransactionManager(transactionManager);
+        txHandler.setPattern("upgradeLevels");
+
+        // UserService 타입의 다이내믹 프록시 생성
+        UserService txUserService = (UserService) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class[] { UserService.class },
+                txHandler);
 
         userDao.deleteAll();
         for (User user : users)
             txUserService.add(user);
-
         try {
             txUserService.upgradeLevels();
             fail("TestUserServiceException expected!");
