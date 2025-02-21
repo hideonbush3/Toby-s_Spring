@@ -54,7 +54,7 @@ public class DynamicProxyTest {
     static class UppercaseHandler implements InvocationHandler {
         Object target;
 
-        private UppercaseHandler(Hello target) {
+        private UppercaseHandler(Object target) {
             this.target = target;
         }
 
