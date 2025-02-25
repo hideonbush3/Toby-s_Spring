@@ -7,7 +7,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
 
 public class DynamicProxyTest {
     @Test
@@ -27,6 +30,32 @@ public class DynamicProxyTest {
         assertThat(proxiedHello.sayHello("Minsu"), is("HELLO MINSU"));
         assertThat(proxiedHello.sayHi("Minsu"), is("HI MINSU"));
         assertThat(proxiedHello.sayThankYou("Minsu"), is("THANK YOU MINSU"));
+    }
+
+    @Test
+    public void proxyFactoryBean() {
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget()); // 타깃 설정
+        pfBean.addAdvice(new UppercaseAdvice());// 부가기능을 담은 어드바이스, 여러개 추가 가능
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        assertThat(proxiedHello.sayHello("Minsu"), is("HELLO MINSU"));
+        assertThat(proxiedHello.sayHi("Minsu"), is("HI MINSU"));
+        assertThat(proxiedHello.sayThankYou("Minsu"), is("THANK YOU MINSU"));
+    }
+
+    static class UppercaseAdvice implements MethodInterceptor {
+
+        @Override
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            String ret = (String) invocation.proceed(); // 리플렉션의 Method와 달리 메서드 실행 시 타깃
+                                                        // 오브젝트를 전달할 필요가 없다
+                                                        // MethodInvocation은 메서드 정보와 타깃
+                                                        // 오브젝트를 알고 있기 때문이다
+            return ret.toUpperCase();
+        }
+
     }
 
     static class HelloUppercase implements Hello {
